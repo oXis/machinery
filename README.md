@@ -88,17 +88,34 @@ Add the Machinery library to your $GOPATH/src:
 go get github.com/RichardKnop/machinery/v1
 ```
 
+Or to get experimental v2 release:
+
+```sh
+go get github.com/RichardKnop/machinery/v2
+```
+
 First, you will need to define some tasks. Look at sample tasks in `example/tasks/tasks.go` to see a few examples.
 
 Second, you will need to launch a worker process with one of these commands (v2 is recommended since it doesn't import dependencies for all brokers / backends, only those you actually need):
 
 ```sh
-go run example/v2/amqp/main.go worker
-go run example/v2/redigo/main.go worker // Redis with redigo driver
-go run example/v2/go-redis/main.go worker // Redis with Go Redis driver
+go run example/amqp/main.go worker
+go run example/redis/main.go worker
 
-go run example/v1/amqp/main.go worker
-go run example/v1/redis/main.go worker
+go run example/amqp/main.go worker
+go run example/redis/main.go worker
+```
+
+You can also try v2 examples.
+
+```sh
+cd v2/
+go run example/amqp/main.go worker
+go run example/redigo/main.go worker // Redis with redigo driver
+go run example/go-redis/main.go worker // Redis with Go Redis driver
+
+go run example/amqp/main.go worker
+go run example/redis/main.go worker
 ```
 
 ![Example worker][1]
@@ -1019,8 +1036,7 @@ signature := &tasks.Signature{
     },
   },
 }
-
-err := server.RegisterPeriodTask("0 6 * * ?", "periodic-task", signature)
+err := server.RegisterPeriodicTask("0 6 * * ?", "periodic-task", signature)
 if err != nil {
   // failed to register periodic task
 }
@@ -1063,7 +1079,7 @@ signature2 := tasks.Signature{
 }
 
 group, _ := tasks.NewGroup(&signature1, &signature2)
-err := server.RegisterPeriodGroup("0 6 * * ?", "periodic-group", group)
+err := server.RegisterPeriodicGroup("0 6 * * ?", "periodic-group", group)
 if err != nil {
   // failed to register periodic group
 }
@@ -1116,7 +1132,7 @@ signature3 := tasks.Signature{
 }
 
 chain, _ := tasks.NewChain(&signature1, &signature2, &signature3)
-err := server.RegisterPeriodChain("0 6 * * ?", "periodic-chain", chain)
+err := server.RegisterPeriodicChain("0 6 * * ?", "periodic-chain", chain)
 if err != nil {
   // failed to register periodic chain
 }
@@ -1164,7 +1180,7 @@ signature3 := tasks.Signature{
 
 group := tasks.NewGroup(&signature1, &signature2)
 chord, _ := tasks.NewChord(group, &signature3)
-err := server.RegisterPeriodChord("0 6 * * ?", "periodic-chord", chord)
+err := server.RegisterPeriodicChord("0 6 * * ?", "periodic-chord", chord)
 if err != nil {
   // failed to register periodic chord
 }
